@@ -23,10 +23,10 @@ public class Main {
                 new PersonRolesDAOModule()
         );
 
-        Database database = new Database();
+        Database database = injector.getInstance(Database.class);
         database.open();
 
-        PersonDAO personDao = new PersonDAOImpl();
+        PersonDAO personDao = injector.getInstance(PersonDAO.class);
         
         // create person
         Person person = new Person(10, "Peter", AuthenticationService.encryptPassword("rafanovsky"));
@@ -37,7 +37,7 @@ public class Main {
         System.out.println(person);
 
         // test authentication
-        AuthenticationService authentication = new AuthenticationServiceImpl(injector.getInstance(PersonDAO.class));
+        AuthenticationService authentication = injector.getInstance(AuthenticationService.class);
         System.out.println(authentication.Authenticate("Peter", "rafa"));
         System.out.println(authentication.Authenticate("Peter", "rafanovsky"));
 
@@ -47,7 +47,7 @@ public class Main {
 
         // test authorization
         person = personDao.load("id = 2");
-        AuthorizationService authorization = new AuthorizationService(injector.getInstance(PersonDAO.class), injector.getInstance(PersonRolesDAO.class));
+        AuthorizationService authorization = injector.getInstance(AuthorizationService.class);
         boolean authorizationResult = authorization.Authorize(person, "/finance/report", AccessOperationType.Read);
         System.out.println(authorizationResult);
         

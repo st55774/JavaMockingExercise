@@ -12,9 +12,6 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     private PersonDAO persondao;
 
     @Inject
-    public AuthenticationServiceImpl() {
-    }
-
     public AuthenticationServiceImpl(PersonDAO personDAO) {
         this.persondao = personDAO;
     }

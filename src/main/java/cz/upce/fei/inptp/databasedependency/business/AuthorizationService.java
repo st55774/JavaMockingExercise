@@ -15,13 +15,10 @@ public class AuthorizationService {
     private PersonDAO persondao;
     private PersonRolesDAO personRolesDao;
 
+    @Inject
     public AuthorizationService(PersonDAO persondao, PersonRolesDAO personRolesDao) {
         this.persondao = persondao;
         this.personRolesDao = personRolesDao;
-    }
-
-    @Inject
-    public AuthorizationService() {
     }
 
     public boolean Authorize(Person person, String section, AccessOperationType operationType) {
