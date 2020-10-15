@@ -1,5 +1,6 @@
 package cz.upce.fei.inptp.databasedependency.dao;
 
+import com.google.inject.Inject;
 import cz.upce.fei.inptp.databasedependency.business.AuthenticationService;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -18,6 +19,7 @@ public class Database {
     private static Database instance;
     private Connection connection;
 
+    @Inject
     public Database() {
         instance = this;
     }

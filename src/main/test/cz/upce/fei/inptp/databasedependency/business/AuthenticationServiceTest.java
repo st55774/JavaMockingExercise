@@ -1,6 +1,7 @@
 package cz.upce.fei.inptp.databasedependency.business;
 
 import cz.upce.fei.inptp.databasedependency.dao.PersonDAO;
+import cz.upce.fei.inptp.databasedependency.dao.PersonDAOImpl;
 import cz.upce.fei.inptp.databasedependency.entity.Person;
 import org.mockito.InjectMocks;
 import org.mockito.Mockito;
@@ -23,8 +24,8 @@ class AuthenticationServiceTest {
 
     @org.junit.jupiter.api.BeforeEach
     void setUp() {
-        personDAO = mock(PersonDAO.class);
-        authenticationService = new AuthenticationService(personDAO);
+        personDAO = mock(PersonDAOImpl.class);
+        authenticationService = new AuthenticationServiceImpl(personDAO);
         authenticatedPerson = new Person(0, USER_NAME, AuthenticationService.encryptPassword(CORRECT_PASSWORD));
     }
 

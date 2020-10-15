@@ -1,5 +1,6 @@
 package cz.upce.fei.inptp.databasedependency.business;
 
+import com.google.inject.Inject;
 import cz.upce.fei.inptp.databasedependency.dao.PersonRolesDAO;
 import cz.upce.fei.inptp.databasedependency.dao.PersonDAO;
 import cz.upce.fei.inptp.databasedependency.entity.PersonRole;
@@ -11,25 +12,18 @@ import cz.upce.fei.inptp.databasedependency.entity.Role;
  * if he has required access directly to specified part, or to upper level part.
  */
 public class AuthorizationService {
-
     private PersonDAO persondao;
     private PersonRolesDAO personRolesDao;
 
-    public AuthorizationService() {
-        this.persondao = new PersonDAO();
-        this.personRolesDao = new PersonRolesDAO();
+    public AuthorizationService(PersonDAO persondao, PersonRolesDAO personRolesDao) {
+        this.persondao = persondao;
+        this.personRolesDao = personRolesDao;
     }
 
-    // TODO: add tests
-    // TODO: Authorize(person, "/section/subsection", rw) - PersonRole([Role("/section/subsection", rw)]) - pass
-    // TODO: Authorize(person, "/section/subsection", rw) - PersonRole([Role("/section/subsection", ro)]) - fail
-    // TODO: Authorize(person, "/section/subsection", rw) - PersonRole([Role("/section", rw)]) - pass
-    // TODO: Authorize(person, "/section/subsection", rw) - PersonRole([Role("/section", ro)]) - fail
-    // TODO: Authorize(person, "/section/subsection", rw) - PersonRole([Role("/", rw)]) - pass
-    // TODO: Authorize(person, "/section/subsection", rw) - PersonRole([Role("/", ro)]) - fail
-    // TODO: Authorize(person, "/section/subsection", rw) - PersonRole([Role("/section/subsection", admin)]) - pass
-    // TODO: Authorize(person, "/section/subsection", rw) - PersonRole([Role("/section", admin)]) - pass
-    // TODO: Authorize(person, "/section/subsection", rw) - PersonRole([Role("/", admin)]) - pass
+    @Inject
+    public AuthorizationService() {
+    }
+
     public boolean Authorize(Person person, String section, AccessOperationType operationType) {
         String roleWhere = persondao.getRoleWhereStringFor(person);
 
@@ -60,11 +54,6 @@ public class AuthorizationService {
         return false;
     }
 
-    // TODO: add tests
-    // TODO: "/section/subsection/subsubsection" -> "/section/subsection"
-    // TODO: "/section/subsection" -> "/section"
-    // TODO: "/section" -> "/"
-    // TODO: "/" -> ""
     private String getUpperLever(String section) {
         if (section.equals("/")) {
             return "";

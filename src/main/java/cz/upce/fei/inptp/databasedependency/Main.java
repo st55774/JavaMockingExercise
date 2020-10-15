@@ -1,11 +1,9 @@
 package cz.upce.fei.inptp.databasedependency;
 
-import cz.upce.fei.inptp.databasedependency.business.AuthorizationService;
-import cz.upce.fei.inptp.databasedependency.business.AuthenticationService;
-import cz.upce.fei.inptp.databasedependency.business.AccessOperationType;
-import cz.upce.fei.inptp.databasedependency.dao.PersonRolesDAO;
-import cz.upce.fei.inptp.databasedependency.dao.PersonDAO;
-import cz.upce.fei.inptp.databasedependency.dao.Database;
+import com.google.inject.Guice;
+import com.google.inject.Injector;
+import cz.upce.fei.inptp.databasedependency.business.*;
+import cz.upce.fei.inptp.databasedependency.dao.*;
 import cz.upce.fei.inptp.databasedependency.entity.PersonRole;
 import cz.upce.fei.inptp.databasedependency.entity.Person;
 import java.sql.ResultSet;
@@ -16,24 +14,19 @@ import java.sql.Statement;
  *
  */
 public class Main {
-
-    /*
-    TODO: Tasks:
-     - Create required unit tests for AuthenticationService
-     - Create required unit tests for AuthorizationService
-     - Create service UserManagerService with methods:
-      - Service MUST depend only on DAO objects, no specific code for DB
-      - CreateUser(String name, String password) : Person
-      - DeleteUser(Person p) : boolean
-      - ChangePassword(Person p, String newPassword) : boolean
-     - Create service UserRoleManagerService
-      - ...
-    */
     public static void main(String[] args) throws SQLException {
+        Injector injector = Guice.createInjector(
+                new AuthenticationServiceModule(),
+                new AuthorizationServiceModule(),
+                new DatabaseModule(),
+                new PersonDAOModule(),
+                new PersonRolesDAOModule()
+        );
+
         Database database = new Database();
         database.open();
 
-        PersonDAO personDao = new PersonDAO();
+        PersonDAO personDao = new PersonDAOImpl();
         
         // create person
         Person person = new Person(10, "Peter", AuthenticationService.encryptPassword("rafanovsky"));
@@ -44,7 +37,7 @@ public class Main {
         System.out.println(person);
 
         // test authentication
-        AuthenticationService authentication = new AuthenticationService();
+        AuthenticationService authentication = new AuthenticationServiceImpl(injector.getInstance(PersonDAO.class));
         System.out.println(authentication.Authenticate("Peter", "rafa"));
         System.out.println(authentication.Authenticate("Peter", "rafanovsky"));
 
@@ -54,7 +47,7 @@ public class Main {
 
         // test authorization
         person = personDao.load("id = 2");
-        AuthorizationService authorization = new AuthorizationService();
+        AuthorizationService authorization = new AuthorizationService(injector.getInstance(PersonDAO.class), injector.getInstance(PersonRolesDAO.class));
         boolean authorizationResult = authorization.Authorize(person, "/finance/report", AccessOperationType.Read);
         System.out.println(authorizationResult);
         
